@@ -10,7 +10,7 @@ The MNIST part.
 * Developed with Microsoft Visual Studio 2017
 ### PyTorch
 * Python 3.5
-* Pytorch v0.1.12 (we do not know whether the code is compatible with v0.2.0)
+* Pytorch v0.1.12 (we do not know whether the code is compatible with v0.2.0 yet)
 * CUDA 8.0 if using GPUs
 ## Run
 ### C#
@@ -30,7 +30,7 @@ where <config.json> is a configuration file. There is an example configuration f
 python3.5 meprop (PyTorch).py
 ```
 ## Cite
-To use this code, please cite the following paper:
+To use the codes or compiled executables, please cite the following paper:
 
 Xu Sun, Xuancheng Ren, Shuming Ma, Houfeng Wang. 
 meProp: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting. In proceedings of ICML 2017.
