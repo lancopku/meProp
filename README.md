@@ -21,7 +21,7 @@ Results on test set (please refer to the paper for detailed results and experime
 
 The effect of *k*, selection (top-*k* vs. random), and network dimension (top-*k* vs. *k*-dimensional):
 
-![Effect of k](./docs/effect-k.png)
+![Effect of k](./docs/effect-k.PNG)
 
 To achieve speedups on GPUs, a slight change is made to unify the top-_k_ pattern across the mini-batch. The original meProp will cause different top-_k_ patterns across examples of a mini-batch, which will require sparse matrix multiplication. However, sparse matrix multiplication is not very efficient on GPUs compared to dense matrix multiplication on GPUs. Hence, by unifying the top-_k_ pattern, we can extract the parts of the matrices that need computation (dense matrices), get the results, and reconstruct them to the appropriate size for further computation. This leads to actual speedups on GPUs, although we believe if a better method is designed, the speedups on GPUs can be better.
 
@@ -77,7 +77,7 @@ or
 ```
 mono nnmnist.exe <config.json>
 ```
-where <config.json> is a configuration file. There is [an example configuration file]("./meprop (CSharp)/nnmnist/default.json") in the source codes. The output will be written to a file at the same location with the executable. The code supports random top-_k_ selection in addition.
+where <config.json> is a configuration file. There is [an example configuration file](./meprop%20(CSharp)/nnmnist/default.json) in the source codes. The output will be written to a file at the same location with the executable. The code supports random top-_k_ selection in addition.
 ### PyTorch
 ```bash
 python3.5 meprop (PyTorch).py
