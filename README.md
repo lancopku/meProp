@@ -77,7 +77,7 @@ or
 ```
 mono nnmnist.exe <config.json>
 ```
-where <config.json> is a configuration file. There is [an example configuration file](./meprop%20(CSharp)/nnmnist/default.json) in the source codes. The output will be written to a file at the same location with the executable. The code supports random top-_k_ selection in addition.
+where <config.json> is a configuration file. There is [an example configuration file](./meprop%20(CSharp)/nnmnist/default.json) in the source codes. The output will be written to a file at the same location with the executable. The code supports random _k_ selection in addition.
 ### PyTorch
 ```bash
 python3.5 meprop (PyTorch).py
