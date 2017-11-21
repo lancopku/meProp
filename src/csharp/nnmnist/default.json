@@ -1,0 +1,23 @@
+﻿{
+  "ClipBound": 5.0,
+  "DecayRate": 0.09,
+  "Eps": 1E-06,
+  "HiddenSize": 500,
+  "IterPerEpoch": 8,
+  "L2RegFactor": 0.0,
+  "LabelCount": 10,
+  "Layers": 3,
+  "LearningRate": 0.001,
+  "MaxEpoch": 20,
+  "MinibatchSize": 100,
+  "NetType": "mlp",
+  "OptType": "adam",
+  "Prune": 0.1,
+  "RandomSeed": -1,
+  "TestFile": "t10k-images.idx3-ubyte",
+  "TestLabelFile": "t10k-labels.idx1-ubyte",
+  "TrainCycle": 5,
+  "TrainFile": "train-images.idx3-ubyte",
+  "TrainLabelFile": "train-labels.idx1-ubyte",
+  "TrainTop": 160
+}

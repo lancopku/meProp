@@ -1,6 +1,10 @@
-# meProp
+# meProp & meSimp
 
 The codes were used for experiments on MNIST with _meProp: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting_ (ICML 2017) [[pdf]](http://proceedings.mlr.press/v70/sun17c/sun17c.pdf) by Xu Sun, Xuancheng Ren, Shuming Ma, Houfeng Wang. Both the codes for CPU and GPU were included.
+
+**Update**: 
+- The codes used for experiments on MNIST with _Training Simplification and Model Simplification for Deep Learning: A Minimal Effort Back Propagation Method_ [[pdf]](https://arxiv.org/pdf/1711.06528) by Xu Sun, Xuancheng Ren, Shuming Ma, Bingzhen Wei, Wei Li, Houfeng Wang, are now included.
+- We have reworked the codes, and the documents are currently being updated. Please refer to the README in src for a brief introduction to the codes.
 
 We propose a simple yet effective technique for neural network learning, which we call **meProp** (*m*inimal *e*ffort back *prop*agation). The forward propagation is computed as usual. In back propagation, only a small subset of the full gradient is computed to update the model parameters. The gradient vectors are sparsified in such a way that **only the top-k elements (in terms of magnitude) are kept**. As a result, only *k* rows or columns (depending on the layout) of the weight matrix are modified, leading to a linear reduction (*k* divided by the vector dimension) in the computational cost. Surprisingly, experimental results demonstrate that we can **update only 1–4% of the weights** at each back propagation pass. This does not result in a larger number of training iterations. More interestingly, the proposed method **improves the accuracy of the resulting models** rather than degrades the accuracy, and a detailed analysis is given in the paper.
 
@@ -36,7 +40,8 @@ bibtex:
   pages = 	 {3299--3308},
   year = 	 {2017},
   volume = 	 {70},
-  series = 	 {Proceedings of Machine Learning Research}
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {International Convention Centre, Sydney, Australia}
 }
 ```
 
@@ -77,9 +82,9 @@ or
 ```
 mono nnmnist.exe <config.json>
 ```
-where <config.json> is a configuration file. There is [an example configuration file](./meprop%20(CSharp)/nnmnist/default.json) in the source codes. The output will be written to a file at the same location with the executable. The code supports random _k_ selection in addition.
+where <config.json> is a configuration file. There is [an example configuration file](./src/csharp/nnmnist/default.json) in the source codes. The output will be written to a file at the same location with the executable. The code supports random _k_ selection in addition.
 ### PyTorch
 ```bash
-python3.5 meprop (PyTorch).py
+python3.5 main.py
 ```
 The results will be written to stdout by default, but you can change the argument _file_ when initializing the _TestGroup_ to write the results to a file. The code supports simple unified meProp in addition. Please notice, this code will use GPU by default.
