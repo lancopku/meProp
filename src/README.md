@@ -2,9 +2,9 @@
 
 This directory contains source codes for the papers.
 
-## csharp
+## C#
 
-Directory csharp contains the code of meProp and meSimp, written in C#. This code runs on CPUs.
+Directory [csharp](./csharp/) contains the code of meProp and meSimp, written in C#. This code runs on CPUs.
 
 We have reworked the code. The code can train MLP models for MNIST using meProp, or meSimp. All that needs to be done is to modify the configuration file. 
 
@@ -46,26 +46,26 @@ csharp\
 ```
 
 
-- To see the general training procedure, please refer to Mnist.cs.
+- To see the general training procedure, please refer to [Mnist.cs](,/csharp/nnmnist/Application/Mnist.cs).
 - To see the implementation of meProp:
-  - TopNHeap.cs contains the code for extracting the top-k elements.
-  - StepTopK methods of the classes in the Units show the forward propagation procedure.
-  - MultiplyTop methods in Flow.cs show the computation of the forward propagation and backward .propagation involving sparse multiplication of two matrices.
-  - MLPTop.cs defines the model of meProp.
+  - [TopNHeap.cs](./csharp/nnmnist/Common/TopNHeap.cs) contains the code for extracting the top-k elements.
+  - StepTopK methods of the classes in the [Units](./csharp/nnmnist/Networks/Units/) show the forward propagation procedure.
+  - MultiplyTop methods in [Flow.cs](./csharp/nnmnist/Networks/Graph/Flow.cs) show the computation of the forward propagation and backward propagation involving sparse multiplication of two matrices.
+  - [MLPTop.cs](./csharp/nnmnist/Networks/MLP.cs) defines the model of meProp.
 - To see the implementation of meSimp:
-  - Mnist.cs contains the cycle mechanism.
-  - DenseMaskedUnit.cs shows an equivalent way to remove the neurons by masking.
-  - Record.cs keeps the activeness of the neurons.
-  - MultiplyTopRecord methods in Flow.cs shows how the activeness is collected.
-  - MLPVar.cs defines the model of meSimp.
-- To see the neural network framework, please refer to the Graph directory.
-  - Flow.cs defines the operations with the forward computation, and the backward gradient computation.
-  - Tensor.cs defines the object of the operations in Flow.cs. Tensor has its value, its gradient, and the gradient history if required by the optimizer, e.g., Adam.
+  - [Mnist.cs](,/csharp/nnmnist/Application/Mnist.cs) contains the cycle mechanism.
+  - [DenseMaskedUnit.cs](./csharp/nnmnist/Networks/Units/DenseMaskedUnit.cs) shows an equivalent way to remove the neurons by masking.
+  - [Record.cs](./csharp/nnmnist/Networks/Units/Record.cs) keeps the activeness of the neurons.
+  - MultiplyTopRecord methods in [Flow.cs](./csharp/nnmnist/Networks/Graph/Flow.cs) shows how the activeness is collected.
+  - [MLPVar.cs](./csharp/nnmnist/Networks/MLPVar.cs) defines the model of meSimp.
+- To see the neural network framework, please refer to the [Graph](./csharp/nnmnist/Networks/Graph/) directory.
+  - [Flow.cs](./csharp/nnmnist/Networks/Graph/Flow.cs) defines the operations with the forward computation, and the backward gradient computation.
+  - [Tensor.cs](./csharp/nnmnist/Networks/Graph/Tensor.cs) defines the object of the operations in [Flow.cs](./csharp/nnmnist/Networks/Graph/Flow.cs). Tensor has its value, its gradient, and the gradient history if required by the optimizer, e.g., Adam.
 
 
-## pytorch
+## PyTorch
 
-Directory pytorch contains the code of meProp, written in python, using the PyTorch package. The code runs on NVIDIA GPUs by default. It should be easy to make it run on CPUs.
+Directory [pytorch](./pytorch/) contains the code of meProp, written in python, using the PyTorch package. The code runs on NVIDIA GPUs by default. It should be easy to make it run on CPUs.
 
 We have also refactored the code. The code is for training MLPs for MNIST using meProp. In addition, unified meProp is supported. The configuration is set in the get_args function or the get_args_unified function. The configuration can also be set by passing arguments when running main.py
 
@@ -84,13 +84,15 @@ pytorch\
     define the MLP model for MNIST
   modules.py
     define modules for meProp (equivalent to torch.nn.Linear)
+  util.py
+    define the helper class for running experiments
        
 ```
 
 
-- To see the general training procedure, please refer to util.py.
-- To see the implementation of meProp and unified meProp, please refer to functions.py.
-- To see the MLP structure used, please refer to modules.py and model.py.
+- To see the general training procedure, please refer to [util.py](./pytorch/util.py).
+- To see the implementation of meProp and unified meProp, please refer to [functions.py](./pytorch/functions.py).
+- To see the MLP structure used, please refer to [modules.py](./pytorch/modules.py) and [model.py](./pytorch/model.py).
 
 
 

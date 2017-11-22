@@ -7,7 +7,14 @@ namespace nnmnist.Networks
 {
     internal class MLP : NetBase
     {
+        // multilayer perceptron (baseline)
+        // relu is the activation function
+        // cross entropy is the cost function
+
+
+
         protected readonly DenseUnit[] Layers;
+
 
         public MLP(Config conf, int nInput, int nOuput, OptBase opt) : base(conf, nInput, nOuput, opt)
         {

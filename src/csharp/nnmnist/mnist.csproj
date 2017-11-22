@@ -233,7 +233,6 @@
     <Compile Include="Networks\MLPTop.cs" />
     <Compile Include="Networks\MLPVar.cs" />
     <Compile Include="Networks\Units\DenseMaskedUnit.cs" />
-    <Compile Include="Networks\Units\LookupUnit.cs" />
     <Compile Include="Networks\Graph\Matrix.cs" />
     <Compile Include="Networks\Graph\Tensor.cs" />
     <Compile Include="Networks\Inits\IdentityInit.cs" />

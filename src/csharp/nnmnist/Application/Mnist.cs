@@ -169,38 +169,55 @@ namespace nnmnist.Application
             Global.Logger.WriteLine($"{Config.Sep}{Config.Sep} Run End");
         }
 
+
+        // Evalutaion on the set
         private double Develop(DataSet set, string name = "dev")
         {
+            // set the model to evaluation mode
             _classifier.Net.Eval();
-			var nTrained = 0;
-            float[] losses = null;
-            var count = 0;
+
+			var nTrained = 0; // for displaying evaluation progress
+            float[] lossAccumulated = null; // loss, each dimension is related to a example in the minibatch
+            var count = 0; // how many minibatches
 			var sw = new Stopwatch();
 			sw.Start();
+
+            // evaluation on minibatches
             foreach (var mb in set.Examples.GetMiniBatches(_conf.MinibatchSize))
             {
                 (_, var prob, var loss) = _classifier.Net.Forward(mb);
-                if (losses != null)
+
+                // accumulate loss
+                // loss already average by minibatch size
+                if (lossAccumulated != null)
                 {
-                    losses.ListAdd(loss.W.Storage);
+                    lossAccumulated.ListAdd(loss.W.Storage);
                 }
                 else
                 {
-                    losses = loss.W.Storage;
+                    lossAccumulated = loss.W.Storage;
                 }
                 count++;
+
+                // get the prediciton
                 for (var i = 0; i < mb.Length; i++)
                 {
                     mb[i].PredictedLabel = prob.W.MaxIndex(i);
                 }
+
+                // display progress
                 nTrained += mb.Length;
                 Global.Logger.WriteConsole($"{nTrained * 100.0 / set.Count:f2}\r");
             }
 			sw.Stop();
-            losses.ListDivide(count);
+
+            // average the loss
+            lossAccumulated.ListDivide(count);
+
+            // calculate the metrics
             var correct = set.Examples.Count(x => x.PredictedLabel == x.Label);
 			var acc = correct * 100.0 / set.Count;
-			Global.Logger.WriteLine($"\t {name}: loss: {string.Join(", ", losses.Select(x => $"{x:f4}"))}, acc: {acc:f2}({correct}/{set.Count}), time = {sw.ElapsedMilliseconds / 1000.0}s");
+            Global.Logger.WriteLine($"\t {name}: loss: {string.Join(", ", lossAccumulated.Select(x => $"{x:f4}"))}, acc: {acc:f2}({correct}/{set.Count}), time = {sw.ElapsedMilliseconds / 1000.0}s");
             return acc;
         }
 
@@ -211,18 +228,24 @@ namespace nnmnist.Application
         // so the loss is actually the the average loss of the mini-batches
         public void TrainBatch(List<Example> examples)
         {
+            // set the model to training mode
             _classifier.Net.Train();
-            var nTrained = 0;
-            float[] lossAccumulated = null;
+
+            var nTrained = 0; // for displaying training progress
+            float[] lossAccumulated = null; // loss, each dimension is related to a example in the minibatch
             var countMinibatch = 0;
             var sw = new Stopwatch();
 			sw.Start();
 
+            // training on minibatches
             foreach (var mb in examples.GetMiniBatches(_conf.MinibatchSize))
             {
+                // train on a minibatch
                 (var f, var prob, var loss) = _classifier.Net.Forward(mb);
                 _classifier.Net.Backward(f);
                 _classifier.Net.Update();
+
+                // accumulate loss; loss already averaged by minibatch size
                 if (lossAccumulated != null)
                 {
                     lossAccumulated.ListAdd(loss.W.Storage);
@@ -232,15 +255,23 @@ namespace nnmnist.Application
                     lossAccumulated = loss.W.Storage;
                 }
                 countMinibatch++;
+
+                // get the prediction
                 for (var i = 0; i < mb.Length; i++)
                 {
                     mb[i].PredictedLabel = prob.W.MaxIndex(i);
                 }
+
+                // displaying progress
                 nTrained += mb.Length;
                 Global.Logger.WriteConsole($"{nTrained * 100.0 / examples.Count:f2}\r");
             }
 			sw.Stop();
+
+            // averge the loss
             lossAccumulated.ListDivide(countMinibatch);
+
+            // calculate the metrics
             var correct = examples.Count(x => x.PredictedLabel == x.Label);
             var acc = correct * 100.0 / examples.Count;
             Global.Logger.WriteLine(

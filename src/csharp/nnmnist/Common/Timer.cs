@@ -5,9 +5,14 @@ namespace nnmnist.Common
 
 	static class Timer
 	{
+        // used to time the different parts of the training: forward, backward, and update
+        // each epoch is a time period
+
 		public static readonly Stopwatch Forward;
 		public static readonly Stopwatch Backward;
 		public static readonly Stopwatch Update;
+
+
 		private static long _fp;
 		private static long _bp;
 		private static long _u;
@@ -21,6 +26,8 @@ namespace nnmnist.Common
 			Update = new Stopwatch();
 		}
 
+        // call at the end of an epoch
+        // save the current timings
 		public static void Save()
 		{
 			_times += 1;
@@ -29,7 +36,7 @@ namespace nnmnist.Common
 			_u += Update.ElapsedTicks;
 		}
 
-
+        // reset the timers
 		public static void Clear()
 		{
 			Forward.Reset();
@@ -37,11 +44,13 @@ namespace nnmnist.Common
 			Update.Reset();
 		}
 
+        // print from the current timers
 		public static void PrintTiming()
 		{
 			Global.Logger.WriteLine($"Time: fp: {Forward.ElapsedMilliseconds/1000.0:f2}s, bp: {Backward.ElapsedMilliseconds/1000.0:f2}s, update: {Update.ElapsedMilliseconds/1000.0:f2}s");
 		}
 
+        // print from the saved timings after average
 		public static void PrintAvgTiming()
 		{
 			var bpt = _bp * 1.0 / Stopwatch.Frequency / _times;

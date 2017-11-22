@@ -7,9 +7,13 @@ namespace nnmnist.Application
 {
     internal class Classifier
     {
+        // just a wrapper to provide factory methods when building the model and the optimizer
+
         private readonly Config _conf;
 
-        private readonly DataSet _dataset;
+        private readonly DataSet _dataset; // not essentially necessary
+                                           // sgd (exponential decay) needs the set size
+                                           // neural network needs the input size
         public NetBase Net;
         public OptBase Opt;
 
@@ -23,7 +27,7 @@ namespace nnmnist.Application
             Opt.Prepare(Net.FixedParam);
         }
 
-
+        // build a optimizer
         private void InitOpt(OptType optType)
         {
             switch (optType)
@@ -39,10 +43,12 @@ namespace nnmnist.Application
                     Opt = new Adam(l2RegFactor: _conf.L2RegFactor, clipRange: _conf.ClipBound);
                     break;
                 default:
+                    // should never reach this
                     throw new ArgumentOutOfRangeException(nameof(optType), optType, null);
             }
         }
 
+        // build a model
         private void InitNet(NetType netType)
         {
             var eDim = _dataset.Examples[0].Feature.Length;
@@ -63,6 +69,7 @@ namespace nnmnist.Application
                     Net = new MLPVar(_conf, eDim, oDim, Opt);
                     break;
                 default:
+                    // should never reach this
                     throw new ArgumentOutOfRangeException(nameof(netType), netType, null);
             }
         }

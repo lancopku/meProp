@@ -7,6 +7,10 @@ namespace nnmnist.Networks
 {
     class MLPVar : NetBase
     {
+        // multilayer perceptron, top k backprop, with simplification
+        // relu is the activation function
+        // cross entropy is the cost function
+
         public readonly DenseUnit[] Layers;
         readonly int _top;
         public override NetType Type => NetType.mlpvar;
@@ -37,6 +41,7 @@ namespace nnmnist.Networks
             _top = conf.TrainTop;
         }
 
+        // simplify the layers
         public virtual void Prune(float per)
         {
             foreach (var layer in Layers)

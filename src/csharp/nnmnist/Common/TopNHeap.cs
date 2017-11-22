@@ -5,6 +5,10 @@ namespace nnmnist.Common
 {
     internal class TopNHeap
     {
+        // for fast top-k selection (the top-k indices)
+        // based on min heap
+
+
         private readonly int[] _iHeap;
         private readonly float[] _vHeap;
         private readonly int _nTop;
@@ -17,11 +21,16 @@ namespace nnmnist.Common
         }
 
 
+        // wrapper to get the top indices from the row of the m
+        // notice the returned indices array are reused in terms of memory space
         public int[] GetAbsTop(Matrix m, int row, int top)
         {
             if (top > _nTop)
+                // not enough space
+                // the space is fixed
                 throw new ArgumentException("top too big");
             if (top > m.ColDim)
+                // array has fewer elements than top
                 throw new ArgumentException("value too short");
             for (var i = 0; i < top; i++)
             {
@@ -42,12 +51,14 @@ namespace nnmnist.Common
             return _iHeap;
         }
 
+        // initialize the heap
         private void MakeHeap(int top)
         {
             for (var i = top >> 1; i >= 0; i--)
                 ShiftDown(i, top);
         }
 
+        // push into elements, and adjust the heap
         private void ShiftDown(int cur, int top)
         {
             while (true)

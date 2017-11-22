@@ -6,7 +6,13 @@ namespace nnmnist.Networks
 {
 	class MLPRand : MLP
 	{
-		public override NetType Type => NetType.mlprand;
+
+	    // multilayer perceptron, random k backprop
+	    // relu is the activation function
+	    // cross entropy is the cost function
+
+
+        public override NetType Type => NetType.mlprand;
 	    private readonly int _k;
 
 		public MLPRand(Config conf, int nInput, int nOuput, OptBase opt) : base(conf, nInput, nOuput, opt)

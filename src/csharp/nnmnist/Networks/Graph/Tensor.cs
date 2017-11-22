@@ -6,6 +6,11 @@ namespace nnmnist.Networks.Graph
 {
     internal class Tensor
     {
+        // the object for operations in Flow
+        // has weights, (always initialized) 
+        // gradients, (initialize by default; can be told to not to initialize)
+        // and gradient histories (not initialized; optimizers should do it)
+
         // for param init
         // using given initializer
         public Tensor(int rowDimension, int columnDimension, IInit init, bool needGrad = true)
@@ -60,7 +65,7 @@ namespace nnmnist.Networks.Graph
         public int Col { get; private set; }
         public int Capacity { get; private set; }
 
-
+        // for init the minibatch input, which does not need gradient
         public static Tensor Input(Example[] examples)
         {
             var t = new Tensor(examples.Length, examples[0].Feature.Length, null, false);
@@ -73,6 +78,7 @@ namespace nnmnist.Networks.Graph
             return t;
         }
 
+        // for init the minibatch output, which does not need gradient
         public static Tensor Target(Example[] examples)
         {
             var t = new Tensor(examples.Length, 1, null, false);
@@ -81,6 +87,7 @@ namespace nnmnist.Networks.Graph
             return t;
         }
 
+        // build a tensor of the same size (filled with 0)
         public Tensor Empty()
         {
             return new Tensor
@@ -95,6 +102,9 @@ namespace nnmnist.Networks.Graph
             };
         }
 
+        // print the tensor weights
+        // useful in debugging
+        // can also cause the watch window being slow
         public override string ToString()
         {
             var sb = new StringBuilder();

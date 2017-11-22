@@ -5,7 +5,13 @@ namespace nnmnist.Common
 
     public class RandomNumberGenerator
     {
-        private readonly Random _rand;
+        // RNG based on the system Random
+        // if seed >=0, use the provided seed
+        // or use the default seed (which is derived from the system clock)
+
+        // the method names are self-explanatory, I think
+        
+        private readonly Random _rand; // the random
 
         public RandomNumberGenerator(int seed = -1)
         {

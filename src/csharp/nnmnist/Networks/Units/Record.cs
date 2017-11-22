@@ -6,9 +6,11 @@ namespace nnmnist.Networks.Units
 {
     internal class Record
     {
-        private readonly int[] _hit;
-        public readonly bool[] Mask;
-        private int _refer;
+        // record of the activeness of the neurons in a dense layer
+
+        private readonly int[] _hit; // how many times a neuron in top-k in backprop
+        public readonly bool[] Mask; // the active neurons, true stands for active
+        private int _refer; // the total times of backprop
 
 
         public Record(int dim)
@@ -23,6 +25,7 @@ namespace nnmnist.Networks.Units
 
         public int Dim => Mask.Count(x => x);
 
+        // call once per backprop
         public void Store(int[][] inds)
         {
             foreach (var i in inds)
@@ -33,7 +36,7 @@ namespace nnmnist.Networks.Units
             }
         }
 
-
+        // simplify the layer
         public int Update(double percent)
         {
             var count = 0;
@@ -50,6 +53,7 @@ namespace nnmnist.Networks.Units
             return count;
         }
 
+        // the indices of the active neurons
         public int[] Indices()
         {
             var list = new List<int>();

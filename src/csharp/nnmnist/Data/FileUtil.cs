@@ -7,6 +7,10 @@ namespace nnmnist.Data
 {
     internal static class FileUtil
     {
+
+        // read the MNIST data (the idx3 format)
+
+        // read a dataset, the image and the label should be paired
         public static List<Example> ReadFromFile(string imgFile, string lbFile)
         {
             var imgBytes = File.ReadAllBytes(imgFile);
@@ -30,6 +34,7 @@ namespace nnmnist.Data
             return set;
         }
 
+        // read four bytes from the file (for image file)
         private static int GetFromFourBytes(byte[] arr, int idx)
         {
             if (BitConverter.IsLittleEndian)
@@ -42,6 +47,7 @@ namespace nnmnist.Data
             return BitConverter.ToInt32(arr, idx);
         }
 
+        // read one byte from the file (for label file)
         private static int GetFromByte(byte[] arr, int idx)
         {
             return arr[idx];

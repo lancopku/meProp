@@ -1,16 +1,19 @@
 ﻿using System;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
 
 namespace nnmnist.Networks.Graph
 {
     internal class Matrix
     {
+        // emulate two-dimensional array by a single-dimensional array for efficiency
+        // storage is row first
+        
         public readonly int ColDim;
         public readonly int RowDim;
         public readonly float[] Storage;
 
+        // a rowdim * coldim matrix filled with 0
         public Matrix(int rowDim, int colDim)
         {
             RowDim = rowDim;
@@ -18,6 +21,7 @@ namespace nnmnist.Networks.Graph
             Storage = new float[rowDim * colDim];
         }
 
+        // a rowdim * coldim matrix filled with elements from valuefactory
         public Matrix(int rowDim, int colDim, Func<float> valueFactory)
         {
             RowDim = rowDim;
@@ -27,6 +31,7 @@ namespace nnmnist.Networks.Graph
                 Storage[i] = valueFactory();
         }
 
+        // a matrix from the provided values
         public Matrix(float[] v, int rowDim, int colDim)
         {
             Storage = v;
@@ -34,12 +39,15 @@ namespace nnmnist.Networks.Graph
             ColDim = colDim;
         }
 
+        // indexer
+        // can index as a multi-dimensional array
         public float this[int row, int column]
         {
             get => Storage[row * ColDim + column];
             set => Storage[row * ColDim + column] = value;
         }
 
+        // a deep copy
         public Matrix Copy()
         {
             var m = new Matrix(RowDim, ColDim);
@@ -48,12 +56,13 @@ namespace nnmnist.Networks.Graph
             return m;
         }
 
-
+        // a new matrix of the same size
         public Matrix Empty()
         {
             return new Matrix(RowDim, ColDim);
         }
 
+        // this += a*b
         public void AddMultiply(Matrix a, Matrix b)
         {
             var nRow = RowDim;
@@ -70,10 +79,12 @@ namespace nnmnist.Networks.Graph
             }
         }
 
+        // this += a*b
+        // only columns in inds of this is calculated
         public void AddMultiply(int[] inds, Matrix a, Matrix b)
         {
             var nRow = RowDim;
-            var nCol = ColDim;
+            //var nCol = ColDim;
             var nDot = a.ColDim;
             for (var i = 0; i < nRow; i++)
             {
@@ -86,7 +97,7 @@ namespace nnmnist.Networks.Graph
             }
         }
 
-
+        // this += a'*b
         public void AddMultiplyTransA(Matrix a, Matrix b)
         {
             var nRow = RowDim;
@@ -103,10 +114,13 @@ namespace nnmnist.Networks.Graph
             }
         }
 
+        // this += a'*b
+        // only elements in binds of b is calculated
+        // (top-k backprop)
         public void AddMultiplyTransA(Matrix a, Matrix b, int[][] binds)
         {
             var nRow = RowDim;
-            var nCol = ColDim;
+            //var nCol = ColDim;
             var nDot = b.RowDim;
             for (var k = 0; k < nDot; k++)
             {
@@ -121,10 +135,14 @@ namespace nnmnist.Networks.Graph
             }
         }
 
+
+        // this += a'*b
+        // only columns in binds of b is calculated
+        // (masked neurons)
         public void AddMultiplyTransA(Matrix a, Matrix b, int[] binds)
         {
             var nRow = RowDim;
-            var nCol = ColDim;
+            //var nCol = ColDim;
             var nDot = b.RowDim;
             for (var k = 0; k < nDot; k++)
             {
@@ -139,6 +157,7 @@ namespace nnmnist.Networks.Graph
             }
         }
 
+        // this += a*b'
         public void AddMultiplyTransB(Matrix a, Matrix b)
         {
             var nRow = RowDim;
@@ -156,11 +175,14 @@ namespace nnmnist.Networks.Graph
             }
         }
 
+        // this += a*b'
+        // only elements in ainds of a is calculated
+        // (top-k backprop)
         public void AddMultiplyTransB(Matrix a, int[][] ainds, Matrix b)
         {
             var nRow = RowDim;
             var nCol = ColDim;
-            var nDot = a.ColDim;
+            //var nDot = a.ColDim;
             for (var i = 0; i < nRow; i++)
             {
                 var inds = ainds[i];
@@ -175,11 +197,14 @@ namespace nnmnist.Networks.Graph
             }
         }
 
+        // this += a*b'
+        // only columns in ainds of a is calculated
+        // (masked neurons)
         public void AddMultiplyTransB(Matrix a, int[] ainds, Matrix b)
         {
             var nRow = RowDim;
             var nCol = ColDim;
-            var nDot = a.ColDim;
+            //var nDot = a.ColDim;
             for (var i = 0; i < nRow; i++)
             {
                 //var inds = ainds[i];
@@ -194,12 +219,13 @@ namespace nnmnist.Networks.Graph
             }
         }
 
-
+        // return the max element
         public float Max()
         {
             return Storage.Max();
         }
 
+        // return the max elment in the row
         public float Max(int row)
         {
             var max = float.NegativeInfinity;
@@ -208,6 +234,7 @@ namespace nnmnist.Networks.Graph
             return max;
         }
 
+        //  return the max elment in the row if not masked
         public float Max(int row, int[] mask)
         {
             var maxInd = -1;
@@ -219,12 +246,13 @@ namespace nnmnist.Networks.Graph
             return this[row, maxInd];
         }
 
+        // return the sum
         public float Sum()
         {
             return Storage.Sum();
         }
 
-
+        // return the index of the max element
         public int MaxIndex()
         {
             var mxv = Storage[0];
@@ -237,6 +265,7 @@ namespace nnmnist.Networks.Graph
             return mxi;
         }
 
+        // return the index of the max element in the row
         public int MaxIndex(int row)
         {
             var mxv = this[row, 0];
@@ -250,6 +279,7 @@ namespace nnmnist.Networks.Graph
             return mxi;
         }
 
+        // return the indices of the max element in the rows
         public int[] MaxIndices()
         {
             var res = new int[RowDim];
@@ -267,6 +297,9 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // print the tensor weights
+        // useful in debugging
+        // can also cause the watch window being slow
         public override string ToString()
         {
             var sb = new StringBuilder();

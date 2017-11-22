@@ -6,6 +6,9 @@ namespace nnmnist.Common
 {
     class Logger
     {
+        // this print to both a file and the console
+        // but the code is bad, very bad
+
         public delegate void OutputEventHandler(object sender, OutputEventArgs e);
         public delegate void OutputConsoleEventHandler(object sender, OutputEventArgs e);
         public delegate void OutputLineEventHandler(object sender, OutputEventArgs e);

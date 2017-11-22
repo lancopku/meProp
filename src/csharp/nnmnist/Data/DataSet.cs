@@ -5,9 +5,11 @@ namespace nnmnist.Data
 {
     internal class DataSet
     {
-        private readonly RandomNumberGenerator _rand;
-        public readonly List<Example> Examples;
-        public readonly List<Example> RandomExamples;
+        // for keeping the examples of a data split
+
+        private readonly RandomNumberGenerator _rand; // for shuffling
+        public readonly List<Example> Examples; // to keep the original order
+        public readonly List<Example> RandomExamples; // shuffled, only for the training set
 
 
         public DataSet(List<Example> examples, RandomNumberGenerator rand)
@@ -21,7 +23,7 @@ namespace nnmnist.Data
 
         public int Count => Examples?.Count ?? 0;
 
-
+        // a very basic shuffling scheme
         public void Shuffle()
         {
             var n = RandomExamples.Count;

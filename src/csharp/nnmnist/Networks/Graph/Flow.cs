@@ -8,6 +8,13 @@ namespace nnmnist.Networks.Graph
 {
     internal class Flow
     {
+        // Flow defines the computaion of the operation and the gradient computation
+        // Flow also records the operations when executed in forward propagation
+        // So the back propagation can be done
+        // (Actually, when execute an operation, we just put the gradient computation into the list)
+        // A flow can be regarded as a dynamic computation graph
+
+
         protected static readonly Func<float, float> SigmoidFunc = x => 1.0f / (1 + (float) Math.Exp(-x));
         private readonly List<Action> _backwardOps;
         private readonly NetBase _net;
@@ -39,6 +46,7 @@ namespace nnmnist.Networks.Graph
         }
 
 
+        // Concatenate column vectors
         public virtual Tensor Concat(params Tensor[] list)
         {
             var res = new Tensor(list.Sum(t => t.Capacity), 1);
@@ -63,7 +71,7 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // Element-wise addition
         public virtual Tensor Add(Tensor l, Tensor r)
         {
             var res = l.Empty();
@@ -85,6 +93,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // add bias to each row of l
+        // bias is a row vector
         public virtual Tensor AddBias(Tensor l, Tensor bias)
         {
             var res = l.Empty();
@@ -127,6 +137,9 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // add bias to each row of l
+        // bias is a row vector
+        // only the columns in inds are computed
         public virtual Tensor AddBias(Tensor l, Tensor bias, int[] inds)
         {
             var res = l.Empty();
@@ -186,6 +199,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // Element-wise addition
+        // only the columns in inds are computed
         public virtual Tensor Add(Tensor l, Tensor r, int[] inds)
         {
             var res = l.Empty();
@@ -215,7 +230,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // l minus t
+        // useful for GRU when the gates are coupled
         public virtual Tensor Minus(float l, Tensor t)
         {
             var res = t.Empty();
@@ -236,6 +252,8 @@ namespace nnmnist.Networks.Graph
         }
 
 
+        // mask the tensor row-wise
+        // if the element in mask is false, the value in the result will be zero
         public virtual Tensor Mask(Tensor t, bool[] mask)
         {
             var res = t.Empty();
@@ -268,7 +286,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // element-wise multiply, scalar multiply
+        // useful for gates
         public virtual Tensor ElementwiseMultiply(Tensor l, Tensor r)
         {
             var res = l.Empty();
@@ -292,7 +311,7 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // tanh
         public virtual Tensor Tanh(Tensor t)
         {
             var res = new Tensor(t.Row, t.Col);
@@ -312,6 +331,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // sigmoid, more stable for meprop
+        // but all relu now
         public virtual Tensor Sigmoid(Tensor t)
         {
             var res = t.Empty();
@@ -332,7 +353,7 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // hard sigmoid
         public virtual Tensor HardSigmoid(Tensor t)
         {
             var res = t.Empty();
@@ -367,6 +388,7 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // hard tanh
         public virtual Tensor HardTanh(Tensor t, float min, float max)
         {
             var res = t.Empty();
@@ -402,7 +424,7 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // relu
         public virtual Tensor Rectifier(Tensor t)
         {
             var res = t.Empty();
@@ -424,6 +446,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // relu 
+        // only columns in inds are computated
         public virtual Tensor Rectifier(Tensor t, int[] inds)
         {
             var res = t.Empty();
@@ -448,6 +472,7 @@ namespace nnmnist.Networks.Graph
         }
 
 
+        // cubic
         public virtual Tensor Cubic(Tensor t)
         {
             var res = t.Empty();
@@ -467,6 +492,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // cubic
+        // only columns in inds are computated
         public virtual Tensor Cubic(Tensor t, int[] inds)
         {
             var res = t.Empty();
@@ -494,7 +521,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // softmax (row-wise), the result is the first returned tensor
+        // then compute cross entropy (also row-wise), the result is the second returned tensor (not summed)
         public virtual (Tensor, Tensor) SoftmaxWithCrossEntropy(Tensor t, Tensor y = null)
         {
             var res = t.Empty();
@@ -523,7 +551,7 @@ namespace nnmnist.Networks.Graph
             {
                 for (var i = 0; i < t.DW.Storage.Length; i++)
                     t.DW.Storage[i] += res.W.Storage[i];// / t.Row;
-                var delta = 1f / t.Row;
+                //var delta = 1f / t.Row;
                 for (var i = 0; i < t.Row; i++)
                     t.DW[i, (int) y.W.Storage[i]] -= 1;//delta;
             });
@@ -588,6 +616,7 @@ namespace nnmnist.Networks.Graph
         //}
 
 
+        // matrix multiply
         public virtual Tensor Multiply(Tensor l, Tensor r)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -616,6 +645,10 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // matrix multiply
+        // computed if the element in the result's column in inds
+        // that is, the columns in inds of r are not used 
+        // (the neurons are not activated)
         public virtual Tensor Multiply(Tensor l, Tensor r, int[] inds)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -644,6 +677,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // matrix multiply, with meprop top-k selection in back propagation
+        // only top-k of the output (row-wise) will be back propagated
         public virtual Tensor MultiplyTop(Tensor l, Tensor r, int k)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -681,7 +716,9 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
-
+        // matrix multiply, with meprop top-k selection in back propagation, for noraml trainging of mesimp
+        // in foward propagation, the columns of r in outinds are not used (masking the neurons)
+        // in backward propagation, only top-k of the output (row-wise) will be back propagated
         public virtual Tensor MultiplyTop(Tensor l, Tensor r, int k, int[] outinds)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -719,6 +756,11 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+
+        // matrix multiply, with meprop top-k selection in back propagation, collecting activeness of the neurons
+        // in foward propagation, no masking is applied
+        // in backward propagation, only top-k of the output (row-wise) will be back propagated, and the indices will be collected by the record
+        // Notice: this method is not used currently, we use it to analyze the activeness when conducting the meprop experiments
         public virtual Tensor MultiplyTopRecord(Tensor l, Tensor r, int k, Record re)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -759,6 +801,10 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+
+        // matrix multiply, with meprop top-k selection in back propagation, for simplification trainging of mesimp
+        // in foward propagation, the columns of r in outinds are not used (masking the neurons)
+        // in backward propagation, only top-k of the output (row-wise) will be back propagated, and the indices will be collected by the record
         public virtual Tensor MultiplyTopRecord(Tensor l, Tensor r, int k, Record re, int[] outinds)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -799,6 +845,8 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // matrix multiply, with meprop random-k selection in back propagation
+        // only top-k of the output (row-wise) will be back propagated
         public virtual Tensor MultiplyRand(Tensor l, Tensor r, int k)
         {
             var res = new Tensor(l.Row, r.Col);
@@ -841,8 +889,13 @@ namespace nnmnist.Networks.Graph
 
         #region Utility
 
+        // the heaps to extract top-k indices
+        // length is minibatch size
+        // initialize once and reuse the memory at each following selection
         [ThreadStatic] private static List<TopNHeap> _tops;
 
+        // wrapper to get the top-k indices (row-wise) from the matrix
+        // top-k of each example
         private int[][] GetAbsTopsHeap(Matrix m, int k)
         {
             var res = new int[m.RowDim][];
@@ -857,6 +910,7 @@ namespace nnmnist.Networks.Graph
             return res;
         }
 
+        // get k random indices of each example
         private int[][] GetRandK(int row, int end, int k)
         {
             var res = new int[row][];

@@ -36,7 +36,7 @@ namespace nnmnist
         public float Eps; // effective in AdaGrad
         public int HiddenSize; // the size of hidden layer
         public int IterPerEpoch; // how many evaluations or simplifications to run in each epoch
-        public float L2RegFactor;
+        public float L2RegFactor; // weight regularization strength; this directly multiplies the weight in gradients
         public int LabelCount; // the size of output layer
         public int Layers; // the number of layers in MLP (including the output layer)
         public float LearningRate; // learning rate of the optimizer (no effect on Adam)
@@ -46,7 +46,12 @@ namespace nnmnist
         [JsonConverter(typeof(StringEnumConverter))] public NetType NetType;
         [JsonConverter(typeof(StringEnumConverter))] public OptType OptType;
         public float Prune; // prune rate for meSimp
-        public int RandomSeed; // if >=0, the seed of random number generator, there are two RNG in the main procedure, one for data shuffling, one for neural network (graph level)
+        public int RandomSeed; // if >=0, the seed of random number generator, 
+                               //   there are two RNG in the main procedure, 
+                               //   one for data shuffling, 
+                               //   one for neural network (graph level)
+                               // if <0, the default seed (which should be derived from the system clock)
+                               // Notice: the random number sequence from .Net framework and that from Mono are different 
         public string TestFile; // should be of format ubyte-idx3
         public string TestLabelFile; // should be of format ubyte-idx1
         public int TrainCycle; // number of epochs in a cycle (|stage|=2*|cycle|), effective for meSimp
@@ -82,7 +87,7 @@ namespace nnmnist
             OptType = OptType.adam;
         }
 
-
+        // convert the hyperparameters to a string
         public override string ToString()
         {
             var infos = GetType().GetFields();
