@@ -255,7 +255,7 @@ def main_unified():
 
 
 if __name__ == '__main__':
-    # this runs meprop
-    main()
-    # uncomment to run unified meprop
-    # main_unified()
+    # uncomment to run meprop
+    # main()
+    # run unified meprop
+    main_unified()

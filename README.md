@@ -1,14 +1,10 @@
-# meProp & meSimp
+# meProp 
 
-The codes were used for experiments on MNIST with _Training Simplification and Model Simplification for Deep Learning: A Minimal Effort Back Propagation Method_ [[pdf]](https://arxiv.org/pdf/1711.06528) by Xu Sun, Xuancheng Ren, Shuming Ma, Bingzhen Wei, Wei Li, Houfeng Wang.
-
-The codes were based on the codes used for the paper _meProp: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting_ (ICML 2017) [[pdf]](http://proceedings.mlr.press/v70/sun17c/sun17c.pdf) by Xu Sun, Xuancheng Ren, Shuming Ma, Houfeng Wang. The codes for CPU are modified to support model simplification. The codes for GPU are refactored.
+The codes were used for the paper _meProp: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting_ (ICML 2017) [[pdf]](http://proceedings.mlr.press/v70/sun17c/sun17c.pdf) by Xu Sun, Xuancheng Ren, Shuming Ma, Houfeng Wang. The codes for CPU are modified to support model simplification. The codes for GPU are refactored.
 
 # Introduction
 
-We propose a simple yet effective technique to simplify the training and the resulting model of neural networks. The technique is based on the top-k selection of the gradients in back propagation.
-
-## meProp
+We propose a simple yet effective technique to simplify the training of neural networks. The technique is based on the top-k selection of the gradients in back propagation.
 
 In back propagation, only a small subset of the full gradient is computed to update the model parameters. The gradient vectors are sparsified in such a way that **only the top-k elements (in terms of magnitude) are kept**. As a result, only *k* rows or columns (depending on the layout) of the weight matrix are modified, leading to a linear reduction in the computational cost. We name this method **meProp** (*m*inimal *e*ffort back *prop*agation).
 
@@ -39,103 +35,30 @@ To achieve speedups on GPUs, a slight change is made to unify the top-_k_ patter
 
 See [[pdf]](https://arxiv.org/abs/1706.06197) for more details, experimental results, and analysis.
 
-bibtex:
-```
-@InProceedings{sun17meprop,
-  title = 	 {me{P}rop: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting},
-  author = 	 {Xu Sun and Xuancheng Ren and Shuming Ma and Houfeng Wang},
-  booktitle = 	 {Proceedings of the 34th International Conference on Machine Learning},
-  pages = 	 {3299--3308},
-  year = 	 {2017},
-  volume = 	 {70},
-  series = 	 {Proceedings of Machine Learning Research},
-  address = 	 {International Convention Centre, Sydney, Australia}
-}
-```
 
-## meSimp
-
- Based on the sparsified gradients from meProp, we further simplify the model by **eliminating the rows or columns that are seldom updated**, which will reduce the computational cost both in the training and decoding, and potentially accelerate decoding in real-world applications. We name this method **meSimp** (*m*inimal *e*ffort *simp*lification).
-
-The model simplification results show that we could adaptively simplify the model which could often be **reduced by around 9x, without any loss on accuracy or even with improved accuracy**.
-
-The following figure is an illustration of the idea of meSimp.
-
-![An illustration of the idea of meSimp.](./docs/mesimp.svg)
-
-**TL;DR**: Training with meSimp can substantially reduce the size of the neural networks, without loss on accuracy or even with improved accuracy. The method works with different neural models (MLP and LSTM). The trained reduced networks work better than normally-trained dimensional networks of the same size.
-
-Results on test set (please refer to the paper for detailed results and experimental settings):
-
-| Method (Adam, CPU)      | Dimension (Avg.)  | Test (%)          |
-| ----------------------- | ----------------- | ----------------- |
-| Parsing (MLP 500d)      | 500               | 89.80             |
-| Parsing (meProp top-20) | **51 (10.2%)**    | **90.11 (+0.31)** |
-| POS-Tag (LSTM 500d)     | 500               | 97.22             |
-| POS-Tag (meProp top-20) | **60 (12.0%)**    | **97.25 (+0.03)** |
-| MNIST (MLP 500d)        | 500               | 98.20             |
-| MNIST (meProp top-160)  | **154 (30.8%)**   | **98.31 (+0.11)** |
-
-See [[pdf]](https://arxiv.org/pdf/1711.06528) for more details, experimental results, and analysis.
-
-bibtex:
-```
-@article{sun17mesimp,
-  title     = {Training Simplification and Model Simplification for Deep Learning: A Minimal Effort Back Propagation Method},
-  author    = {Xu Sun and Xuancheng Ren and Shuming Ma and Bingzhen Wei and Wei Li and Houfeng Wang},
-  journal   = {CoRR},
-  volume    = {abs/1711.06528},
-  year      = {2017}
-}
-```
 
 # Usage
 
-We developed the codes for the purpose of research, and we do not guarantee the codes are fully annotated and easy to understand, although we did annotate and adjust the structure before publishing the codes. 
+## PyTorch
 
-## Requirements
+### Requirements
 
-### C#
-* Targeting Microsoft .NET Framework 4.6.1+
-* Compatible versions of Mono should work fine (tested Mono 5.0.1)
-* Developed with Microsoft Visual Studio 2017
-### PyTorch
 * Python 3.5
-* PyTorch v0.1.12+
+* PyTorch v0.1.12+ - v0.3.1
 * torchvision
 * CUDA 8.0
 
-## Dataset
+### Dataset
 
-### C#
-MNIST: Download from [link](http://yann.lecun.com/exdb/mnist/). Extract the files, and place them at the same location with the executable.
-
-### PyTorch
 MNIST: The code will automatically download the dataset and process the dataset (using torchvision). See function _get_mnist_ in the pytorch code for more information.
 
-## Run
-### C#
-Compile the code first, or use the executable provided in releases.
-
-Then
-```
-nnmnist.exe <config.json>
-```
-or
-```
-mono nnmnist.exe <config.json>
-```
-where <config.json> is a configuration file. There is [an example configuration file](./src/csharp/nnmnist/default.json) in the source codes. The example configuration file runs the baseline model. Change the NetType to _mlptop_ for experimenting with meProp, and to _mlpvar_ for experimenting with meSimp. The output will be written to a file at the same location with the executable. 
-
-The code supports random _k_ selection in addition.
-
-### PyTorch
+### Run
 
 ```bash
 python3.5 main.py
 ```
 
-The code runs meProp using sparse matrix multiplication by default. You could change the lines at the bottom of the [main.py](./src/pytorch/main.py) to run unified meProp. Or you could pass the arguments through command line.
+The code runs unified meProp by default. You could change the lines at the bottom of the [main.py](./src/pytorch/main.py) to run meProp using sparse matrix multiplication. Or you could pass the arguments through command line.
 
 ```
 usage: main.py [-h] [--n_epoch N_EPOCH] [--d_hidden D_HIDDEN]
@@ -160,3 +83,48 @@ optional arguments:
 The results will be written to stdout by default, but you could change the argument _file_ when initializing the _TestGroup_ to write the results to a file. 
 
 The code supports simple unified meProp in addition. Please notice, this code will use GPU 0 by default.
+
+
+## C#
+
+### Requirements
+
+* Targeting Microsoft .NET Framework 4.6.1+
+* Compatible versions of Mono should work fine (tested Mono 5.0.1)
+* Developed with Microsoft Visual Studio 2017
+
+### Dataset
+
+MNIST: Download from [link](http://yann.lecun.com/exdb/mnist/). Extract the files, and place them at the same location with the executable.
+
+### Run
+
+Compile the code first, or use the executable provided in releases.
+
+Then
+```
+nnmnist.exe <config.json>
+```
+or
+```
+mono nnmnist.exe <config.json>
+```
+where <config.json> is a configuration file. There is [an example configuration file](./src/csharp/nnmnist/default.json) in the source codes. The example configuration file runs the baseline model. Change the NetType to _mlptop_ for experimenting with meProp, and to _mlpvar_ for experimenting with meSimp. The output will be written to a file at the same location with the executable. 
+
+The code supports random _k_ selection in addition.
+
+# Citation
+
+bibtex:
+```
+@InProceedings{sun17meprop,
+  title = 	 {me{P}rop: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting},
+  author = 	 {Xu Sun and Xuancheng Ren and Shuming Ma and Houfeng Wang},
+  booktitle = 	 {Proceedings of the 34th International Conference on Machine Learning},
+  pages = 	 {3299--3308},
+  year = 	 {2017},
+  volume = 	 {70},
+  series = 	 {Proceedings of Machine Learning Research},
+  address = 	 {International Convention Centre, Sydney, Australia}
+}
+```
