@@ -2,6 +2,8 @@
 
 The codes were used for the paper _meProp: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting_ (ICML 2017) [[pdf]](http://proceedings.mlr.press/v70/sun17c/sun17c.pdf) by Xu Sun, Xuancheng Ren, Shuming Ma, Houfeng Wang. 
 
+Based on meProp, we further simplify the model by eliminating the rows or columns that are seldom updated, which will reduce the computational cost both in the training and decoding, and potentially accelerate decoding in real-world applications. We name this method meSimp (minimal effort simplification). For more details, please go to [[this link]](https://github.com/lancopku/meSimp).
+
 # Introduction
 
 We propose a simple yet effective technique to simplify the training of neural networks. The technique is based on the top-k selection of the gradients in back propagation.
