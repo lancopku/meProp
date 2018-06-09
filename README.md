@@ -2,7 +2,7 @@
 
 The codes were used for the paper _meProp: Sparsified Back Propagation for Accelerated Deep Learning with Reduced Overfitting_ (ICML 2017) [[pdf]](http://proceedings.mlr.press/v70/sun17c/sun17c.pdf) by Xu Sun, Xuancheng Ren, Shuming Ma, Houfeng Wang. 
 
-Based on meProp, we further simplify the model by eliminating the rows or columns that are seldom updated, which will reduce the computational cost both in the training and decoding, and potentially accelerate decoding in real-world applications. We name this method meSimp (minimal effort simplification). For more details, please go to [[this link]](https://github.com/lancopku/meSimp).
+Based on **meProp**, we further simplify the model by eliminating the rows or columns that are seldom updated, which will reduce the computational cost both in the training and decoding, and potentially accelerate decoding in real-world applications. We name this method **meSimp** (*m*inimal *e*ffort *simp*lification). For more details, please see the paper _Training Simplification and Model Simplification for Deep Learning: A Minimal Effort Back Propagation Method_ [[pdf]](https://arxiv.org/pdf/1711.06528). The codes are at [[here]](https://github.com/lancopku/meSimp).
 
 # Introduction
 
