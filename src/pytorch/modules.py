@@ -36,9 +36,9 @@ class Linear(nn.Module):
 
     def forward(self, x):
         if self.unified:
-            return linearUnified(self.k)(x, self.w, self.b)
+            return linearUnified.apply(x, self.w, self.b)#add apply
         else:
-            return linear(self.k)(x, self.w, self.b)
+            return linear.apply(x, self.w, self.b)#add apply
 
     def __repr__(self):
         return '{} ({} -> {} <- {}{})'.format(self.__class__.__name__,

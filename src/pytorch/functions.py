@@ -18,7 +18,7 @@ class linearUnified(Function):
         '''
         super(linearUnified, self).__init__()
         self.k = k
-
+    @staticmethod
     def forward(self, x, w, b):
         '''
         forward propagation
@@ -36,7 +36,7 @@ class linearUnified(Function):
         self.add_buffer = x.new(x.size(0)).fill_(1)
         y.addr_(self.add_buffer, b)
         return y
-
+    @staticmethod
     def backward(self, dy):
         '''
         backprop with meprop

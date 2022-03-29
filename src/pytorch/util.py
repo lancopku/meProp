@@ -10,7 +10,7 @@ import torch.cuda
 import torch.nn.functional as F
 import torch.optim as optim
 import torch.utils.data
-from torch.autograd import Variable
+from torch.autograd import Variable#deprecated- no longer supported
 
 from model import NetLayer
 
@@ -102,8 +102,7 @@ class TestGroup(object):
         utime = 0
         tloss = 0
         for bid, (data, target) in enumerate(self.trainloader):
-            data, target = Variable(data).cuda(), Variable(
-                target.view(-1)).cuda()
+            data, target = Variable(data).cuda(), Variable(target.view(-1)).cuda()#Deprecated- need to replace
             start = torch.cuda.Event(True)
             end = torch.cuda.Event(True)
 
@@ -145,8 +144,7 @@ class TestGroup(object):
         test_loss = 0
         correct = 0
         for data, target in loader:
-            data, target = Variable(
-                data, volatile=True).cuda(), Variable(target).cuda()
+            data, target = Variable(data, volatile=True).cuda(), Variable(target).cuda()# Deprecated- need to update
             output = model(data)
             test_loss += F.nll_loss(output, target).data[0]
             pred = output.data.max(1)[
@@ -204,7 +202,7 @@ class TestGroup(object):
             start = torch.cuda.Event(True)
             end = torch.cuda.Event(True)
             start.record()
-            loss, ft, bt, ut = self._train(model, opt)
+            loss, ft, bt, ut = self._train(model, opt)#model is trained here
             end.record()
             end.synchronize()
             ttime = start.elapsed_time(end)
@@ -215,7 +213,7 @@ class TestGroup(object):
             btime.append(bt)
             utime.append(ut)
             # predict
-            curacc = self._evaluate(model, self.devloader, 'dev')
+            curacc = self._evaluate(model, self.devloader, 'dev')#evaluation here
             if curacc > acc:
                 e = t
                 acc = curacc
